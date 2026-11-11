@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+/* Identity: "Poorani K — a campaign in seven channels".
+   Every page is a broadcast channel with its own colour; type is oversized condensed display,
+   a serif italic for voice, a grotesk for reading and a mono for data/broadcast labels. */
+@theme {
+  --color-ink: #0C0A12;
+  --color-paper: #F3EEE6;
+  --color-cobalt: #2433FF;
+  --color-hot: #FF2E7E;
+  --color-flame: #FF4A1C;
+  --color-volt: #E3FF3B;
+  --color-amber: #FFB21C;
+  --color-mint: #4FE3D0;
+  /* --ff-* come from next/font (lib/fonts.ts); the named families cover the static preview build */
+  --font-display: var(--ff-display, "Big Shoulders Display"), "Arial Narrow", Impact, sans-serif;
+  --font-serif: var(--ff-serif, "Instrument Serif"), Georgia, "Times New Roman", serif;
+  --font-sans: var(--ff-sans, "Familjen Grotesk"), "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--ff-mono, "JetBrains Mono"), ui-monospace, Menlo, Consolas, monospace;
+  --breakpoint-xs: 26rem;
+}
+
+:root { color-scheme: dark; }
+html { background: var(--color-ink); }
+body {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background-color .6s ease;
+}
+::selection { background: var(--color-volt); color: var(--color-ink); }
+
+.gutter {
+  padding-left: max(18px, env(safe-area-inset-left, 0px));
+  padding-right: max(18px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 768px) {
+  .gutter { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); }
+}
+
+.display { font-family: var(--font-display); font-weight: 900; line-height: .82; letter-spacing: -0.01em; text-transform: uppercase; }
+.serif-i { font-family: var(--font-serif); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -0.01em; }
+.label { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+h1, h2, h3 { text-wrap: balance; }
+
+/* split-text masks */
+.w-mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .04em; margin-bottom: -.04em; }
+.w-in { display: inline-block; will-change: transform; }
+
+/* outlined text */
+.outline-text { color: transparent; -webkit-text-stroke: 1.5px currentColor; }
+.outline-paper { color: transparent; -webkit-text-stroke: 1.5px var(--color-paper); }
+.outline-ink { color: transparent; -webkit-text-stroke: 1.5px var(--color-ink); }
+
+/* film grain layer over everything */
+.grain {
+  pointer-events: none; position: fixed; inset: -50%; z-index: 90; opacity: .09; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain 1.2s steps(6) infinite;
+}
+@keyframes grain {
+  0%{transform:translate(0,0)} 20%{transform:translate(-3%,2%)} 40%{transform:translate(2%,-4%)}
+  60%{transform:translate(-4%,-2%)} 80%{transform:translate(3%,3%)} 100%{transform:translate(0,0)}
+}
+
+/* custom cursor */
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor, html.has-cursor * { cursor: none !important; }
+}
+.cursor-dot, .cursor-ring { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 120; border-radius: 999px; mix-blend-mode: difference; }
+.cursor-dot { width: 8px; height: 8px; margin: -4px 0 0 -4px; background: #fff; }
+.cursor-ring {
+  width: 44px; height: 44px; margin: -22px 0 0 -22px; border: 1.5px solid #fff;
+  display: grid; place-items: center; transition: width .35s cubic-bezier(.76,0,.24,1), height .35s cubic-bezier(.76,0,.24,1), margin .35s cubic-bezier(.76,0,.24,1), background-color .35s;
+}
+.cursor-ring span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #000; opacity: 0; transition: opacity .2s; white-space: nowrap; }
+.cursor-ring.is-label { width: 104px; height: 104px; margin: -52px 0 0 -52px; background: var(--color-volt); border-color: var(--color-volt); mix-blend-mode: normal; }
+.cursor-ring.is-label span { color: var(--color-ink); }
+.cursor-ring.is-label span { opacity: 1; }
+.cursor-ring.is-hover { width: 70px; height: 70px; margin: -35px 0 0 -35px; }
+
+/* marquee */
+.marquee { display: flex; width: max-content; will-change: transform; }
+
+/* broadcast static used by the channel-change curtain */
+.static {
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 1px, transparent 1px 3px);
+  animation: scan 0.25s linear infinite;
+}
+@keyframes scan { to { background-position: 0 6px; } }
+
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+
+:focus-visible { outline: 3px solid var(--color-volt); outline-offset: 3px; box-shadow: 0 0 0 6px var(--color-ink); }
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.skip-link { position: fixed; left: 16px; top: -100px; z-index: 200; background: var(--color-volt); color: var(--color-ink); padding: 12px 18px; border-radius: 999px; font-weight: 600; }
+.skip-link:focus { top: max(16px, env(safe-area-inset-top, 0px)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .grain, .static { animation: none; }
+  *, *::before, *::after { transition-duration: .01ms !important; }
+}
